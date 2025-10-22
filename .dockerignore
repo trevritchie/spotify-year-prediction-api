@@ -1,0 +1,35 @@
+# Data files (not needed in container - model is already trained)
+data/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Documentation and notes
+*.md
+!README.md
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Test files
+test_api.py
+
+# OS files
+.DS_Store
+Thumbs.db
+
