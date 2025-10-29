@@ -1,6 +1,9 @@
 # Music Release Year Prediction API
 
-Predicts the release year of songs (1921-2020) based on Spotify audio features.
+Predicts the release year of songs (1921-2020) based on Spotify audio features.  
+
+**Live Demo:** [https://huggingface.co/spaces/trevritchie/music-year-predictor](https://huggingface.co/spaces/trevritchie/music-year-predictor)
+
 
 ## Task 1: Model Training
 
@@ -175,3 +178,11 @@ curl -s -X POST http://localhost:8000/predict \
     "mode": 1.0
   }' | jq
 ```
+
+## Hugging Face Spaces
+
+I put this project on Hugging Face's Docker Spaces. If you want to play around with the interactive sliders, you can access the live demo here:
+
+- **Live Demo:** [https://huggingface.co/spaces/trevritchie/music-year-predictor](https://huggingface.co/spaces/trevritchie/music-year-predictor)
+
+- **Hugging Face Docs:** [https://huggingface.co/docs/hub/en/spaces-sdks-docker](https://huggingface.co/docs/hub/en/spaces-sdks-docker)
