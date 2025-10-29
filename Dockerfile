@@ -1,21 +1,32 @@
-# Use Python 3.11 slim image for smaller size
+# Use Python 3.11 slim image
 FROM python:3.11-slim
+
+# Create user with ID 1000
+RUN useradd -m -u 1000 user
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first for better layer caching
-COPY requirements.txt .
+# Copy requirements with user ownership
+COPY --chown=user requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-# Copy application code and models
-COPY app/ ./app/
-COPY models/ ./models/
+# Copy application files with user ownership
+COPY --chown=user app/ ./app/
+COPY --chown=user models/ ./models/
+COPY --chown=user static/ ./static/
+
+# Switch to non-root user
+USER user
+
+# Set environment variables
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
 
 # Expose port 8000
 EXPOSE 8000
 
-# Run the API (no --reload in production)
+# Run application on port 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

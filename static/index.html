@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Release Year Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Music Release Year Predictor</h1>
+            <p class="subtitle">Predict when a song was released based on its audio features</p>
+        </header>
+
+        <div class="main-content">
+            <div class="info-box">
+                <h3>About This Model</h3>
+                <p>Random Forest ML model trained on 170,653 Spotify tracks (1921-2020)</p>
+                <ul>
+                    <li><strong>R² Score:</strong> 0.6804 (68% accuracy)</li>
+                    <li><strong>MAE:</strong> 10.72 years</li>
+                    <li><strong>Key Feature:</strong> Acousticness (47% importance)</li>
+                </ul>
+            </div>
+
+            <div class="examples">
+                <h3>Try Real Songs:</h3>
+                <button onclick="load1920s()" class="preset-btn">
+                    <strong>Piano Concerto No. 3</strong><br>
+                    <small>Sergei Rachmaninoff (1921)</small>
+                </button>
+                <button onclick="load1970s()" class="preset-btn">
+                    <strong>Have You Ever Seen The Rain</strong><br>
+                    <small>Creedence Clearwater Revival (1970)</small>
+                </button>
+                <button onclick="load2020()" class="preset-btn">
+                    <strong>Mood (feat. iann dior)</strong><br>
+                    <small>24kGoldn (2020)</small>
+                </button>
+            </div>
+
+            <form id="prediction-form">
+                <div class="sliders-grid">
+                    <div class="slider-group">
+                        <label for="acousticness">Acousticness (0-1)</label>
+                        <input type="range" id="acousticness" min="0" max="1" step="0.001" value="0.5">
+                        <span class="value" id="acousticness-value">0.500</span>
+                        <small>Higher = more acoustic instruments</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="danceability">Danceability (0-1)</label>
+                        <input type="range" id="danceability" min="0" max="1" step="0.001" value="0.5">
+                        <span class="value" id="danceability-value">0.500</span>
+                        <small>Higher = easier to dance to</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="energy">Energy (0-1)</label>
+                        <input type="range" id="energy" min="0" max="1" step="0.001" value="0.5">
+                        <span class="value" id="energy-value">0.500</span>
+                        <small>Higher = more energetic</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="instrumentalness">Instrumentalness (0-1)</label>
+                        <input type="range" id="instrumentalness" min="0" max="1" step="0.001" value="0.05">
+                        <span class="value" id="instrumentalness-value">0.050</span>
+                        <small>Higher = less vocals</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="liveness">Liveness (0-1)</label>
+                        <input type="range" id="liveness" min="0" max="1" step="0.001" value="0.2">
+                        <span class="value" id="liveness-value">0.200</span>
+                        <small>Higher = likely live recording</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="loudness">Loudness (dB)</label>
+                        <input type="range" id="loudness" min="-60" max="0" step="0.1" value="-10">
+                        <span class="value" id="loudness-value">-10.0</span>
+                        <small>Modern songs are louder</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="speechiness">Speechiness (0-1)</label>
+                        <input type="range" id="speechiness" min="0" max="1" step="0.001" value="0.05">
+                        <span class="value" id="speechiness-value">0.050</span>
+                        <small>Higher = more spoken words</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="tempo">Tempo (BPM)</label>
+                        <input type="range" id="tempo" min="50" max="250" step="0.1" value="120">
+                        <span class="value" id="tempo-value">120.0</span>
+                        <small>Beats per minute</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="valence">Valence (0-1)</label>
+                        <input type="range" id="valence" min="0" max="1" step="0.001" value="0.5">
+                        <span class="value" id="valence-value">0.500</span>
+                        <small>Higher = more positive/happy</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="duration_ms">Duration (ms)</label>
+                        <input type="range" id="duration_ms" min="50000" max="600000" step="1000" value="200000">
+                        <span class="value" id="duration_ms-value">200000</span>
+                        <small>Song length in milliseconds</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="key">Key (0-11)</label>
+                        <input type="range" id="key" min="0" max="11" step="1" value="5">
+                        <span class="value" id="key-value">5</span>
+                        <small>Musical key (C=0, C#=1, etc.)</small>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="mode">Mode</label>
+                        <input type="range" id="mode" min="0" max="1" step="1" value="1">
+                        <span class="value" id="mode-value">1</span>
+                        <small>0 = minor, 1 = major</small>
+                    </div>
+                </div>
+
+                <button type="submit" class="predict-btn">Predict Release Year</button>
+            </form>
+
+            <div id="result" class="result hidden">
+                <h3>Prediction Result</h3>
+                <div class="prediction-year">
+                    <span class="year-label">Predicted Year:</span>
+                    <span class="year-value" id="predicted-year">-</span>
+                </div>
+                <div class="confidence">
+                    <p><strong>Confidence Interval (68%):</strong> <span id="confidence-range">-</span></p>
+                    <p class="model-info">Model: R² = 0.6804, MAE = 10.72 years</p>
+                </div>
+            </div>
+
+            <div id="error" class="error hidden">
+                <p id="error-message"></p>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                <a href="/docs" target="_blank">API Documentation</a> |
+                <a href="https://github.com/trevritchie/spotify-year-prediction-api" target="_blank">GitHub</a>
+            </p>
+            <p class="tech-stack">Built with FastAPI · Docker · scikit-learn</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
+

@@ -12,7 +12,7 @@ print("=" * 60)
 # Test 1: Health Check
 print("\n1. Health Check")
 try:
-    response = requests.get(f"{BASE_URL}/")
+    response = requests.get(f"{BASE_URL}/health")
     print(f"Status: {response.status_code}")
     data = response.json()
     print(f"Model Loaded: {data.get('model_loaded')}")

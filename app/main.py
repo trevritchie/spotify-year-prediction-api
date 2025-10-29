@@ -2,6 +2,8 @@
 FastAPI application for music release year prediction.
 """
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 import joblib
 import numpy as np
@@ -67,10 +69,10 @@ class SongFeatures(BaseModel):
         }
 
 
-@app.get("/", tags=["Health"])
+@app.get("/health", tags=["Health"])
 def health_check():
     """
-    Health check endpoint - returns API status and model information
+    Health check endpoint (preferred) - returns API status and model information
     """
     return {
         "status": "online",
@@ -79,11 +81,24 @@ def health_check():
         "model_path": str(MODEL_PATH),
         "features_required": feature_names if feature_names else [],
         "endpoints": {
-            "health": "GET /",
+            "root": "GET / (Interactive UI)",
+            "health": "GET /health",
             "predict": "POST /predict",
             "docs": "GET /docs"
         }
     }
+
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def interactive_ui():
+    """
+    Serve interactive UI with sliders at root path
+    """
+    return FileResponse("static/index.html")
 
 
 @app.post("/predict", tags=["Prediction"])

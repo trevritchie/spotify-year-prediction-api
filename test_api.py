@@ -15,9 +15,9 @@ try:
 
     # Test 1: Health Check
     print("\n" + "="*60)
-    print("TEST 1: Health Check (GET /)")
+    print("TEST 1: Health Check (GET /health)")
     print("="*60)
-    response = requests.get(f"{BASE_URL}/")
+    response = requests.get(f"{BASE_URL}/health")
     print(f"Status Code: {response.status_code}")
     print(f"Response: {json.dumps(response.json(), indent=2)}")
 
